@@ -932,6 +932,7 @@ def bundle_conda(output, metadata, env, stats, **kw):
         else:
             interpreter_and_args = interpreter.split(' ')
 
+        print("I am here!")
         initial_files = utils.prefix_files(metadata.config.host_prefix)
         env_output = env.copy()
         env_output['TOP_PKG_NAME'] = env['PKG_NAME']
@@ -960,6 +961,7 @@ def bundle_conda(output, metadata, env, stats, **kw):
         log_stats(bundle_stats, "bundling {}".format(metadata.name()))
         if stats is not None:
             stats[stats_key(metadata, 'bundle_{}'.format(metadata.name()))] = bundle_stats
+        exit()
 
     if files:
         # Files is specified by the output
@@ -1440,7 +1442,6 @@ def build(m, stats, post=None, need_source_download=True, need_reparse_in_env=Fa
             print("no source - creating empty work folder")
         os.makedirs(src_dir)
 
-    print("BLALBLALA")
     utils.rm_rf(m.config.info_dir)
     files1 = utils.prefix_files(prefix=m.config.host_prefix)
     with open(join(m.config.build_folder, 'prefix_files.txt'), 'w') as f:
@@ -1473,6 +1474,18 @@ def build(m, stats, post=None, need_source_download=True, need_reparse_in_env=Fa
                 print("writing build file: ", build_file)
                 print("writing build file: ", script)
                 work_file, _ = write_build_scripts(m, script, build_file)
+
+                # # TODO figure this out?
+                # print("COPYING SCRIPT!")
+                # dest_file = os.path.join(m.config.work_dir, script)
+                # print(os.path.join(m.path, script), dest_file)
+                # utils.copy_into(os.path.join(m.path, script), dest_file)
+                # from os import stat
+                # st = stat(dest_file)
+                # os.chmod(dest_file, st.st_mode | 0o200)
+                # if m.activate_build_script:
+                #     _write_activation_text(dest_file, m)
+
                 if not provision_only:
                     cmd = [shell_path] + (['-x'] if m.config.debug else []) + ['-o', 'errexit', work_file]
 
@@ -1513,6 +1526,7 @@ def build(m, stats, post=None, need_source_download=True, need_reparse_in_env=Fa
 
     output = {}
     output['files'] = new_prefix_files
+    # output['script'] = script
     newly_built_packages = bundle_conda(output, m, env, stats)
 
 

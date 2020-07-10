@@ -26,6 +26,11 @@ from mamba.utils import to_txn
 from mamba.mamba_api import PrefixData
 from conda.gateways.disk.create import mkdir_p
 from conda_build.index import update_index
+import conda_build
+from conda_build.variants import find_config_files, parse_config_file
+from conda_build.conda_interface import MatchSpec
+
+from typing import Tuple
 
 from pprint import pprint
 
@@ -99,14 +104,6 @@ def jinja_functions(config, context_dict):
         "compiler": compiler,
         "environ": os.environ,
     }
-
-
-import conda_build
-from conda_build.variants import find_config_files, parse_config_file
-from conda_build.conda_interface import MatchSpec
-
-from typing import Tuple
-
 
 @dataclass
 class CondaBuildSpec:
@@ -602,6 +599,8 @@ def to_build_tree(ydoc, variants, config):
         }
         tsorted = toposort.toposort(sort_dict)
         tsorted = [o for o in tsorted if o in sort_dict.keys()]
+    else:
+        tsorted = [o for o in outputs.keys()]
 
     for name in tsorted:
         output = outputs[name]
